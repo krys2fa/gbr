@@ -6,6 +6,7 @@ import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { SignOutButton } from "@/components/SignOutButton";
 import { usePathname } from "next/navigation";
 import styles from "./chrome.module.css";
+import { Menu } from "lucide-react";
 
 type NavItem = { href: Route; label: string; icon?: React.ReactNode };
 
@@ -105,23 +106,10 @@ export function DashboardChrome({
           <div className={styles.row}>
             <button
               aria-label="Open menu"
-              className="icon-btn"
+              className="icon-btn hide-desktop"
               onClick={() => setOpen(true)}
             >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-              </svg>
+              <Menu size={20} />
             </button>
             <strong>Dashboard</strong>
           </div>
@@ -185,27 +173,13 @@ export function DashboardChrome({
 
       <style jsx global>{`
         @keyframes slide-in {
-          from {
-            transform: translateX(-8px);
-            opacity: 0.8;
-          }
-          to {
-            transform: none;
-            opacity: 1;
-          }
+          from { transform: translateX(-8px); opacity: 0.8; }
+          to { transform: none; opacity: 1; }
         }
-        @media (min-width: 769px) {
-          .hide-desktop {
-            display: none !important;
-          }
-        }
+        @media (min-width: 769px) { .hide-desktop { display: none !important; } }
         @media (max-width: 768px) {
-          .shell {
-            grid-template-columns: 1fr !important;
-          }
-          .sidebar {
-            display: none;
-          }
+          .shell { grid-template-columns: 1fr !important; }
+          .sidebar { display: none; }
         }
       `}</style>
     </div>
