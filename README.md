@@ -139,6 +139,11 @@ Reviews and merging
   - `git checkout master && git pull --ff-only`
   - Delete your branch locally and on origin (`git branch -d <branch>` / delete via GitHub)
 
+Branch protection (maintainers)
+
+- Run the "Configure branch protection" workflow from Actions to require the PR title check (Semantic Pull Request) on `master`.
+- This requires setting a repo secret `ADMIN_TOKEN` with a token that has admin:repo_hook and repo permissions.
+
 Hotfixes
 
 - Use `fix/*` branches for urgent bugs; follow the same PR flow. If a production deploy is blocked, prioritize a small, targeted fix PR.
