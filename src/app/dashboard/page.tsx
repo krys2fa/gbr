@@ -9,9 +9,7 @@ export default async function DashboardHome() {
   return (
     <div>
       <h1>Dashboard</h1>
-      <p>
-        Welcome back{session.user?.name ? `, ${session.user.name}` : ""}.
-      </p>
+      <p>Welcome back{session.user?.name ? `, ${session.user.name}` : ""}.</p>
       <p>
         Your role: <strong>{role}</strong>
       </p>
@@ -23,4 +21,3 @@ export default async function DashboardHome() {
     </div>
   );
 }
- 
