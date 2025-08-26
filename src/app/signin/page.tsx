@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { signIn } from "next-auth/react";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -24,14 +25,17 @@ export default function SignInPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(undefined);
-    const res = await fetch("/api/auth/callback/credentials", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ csrfToken: "", email, password }).toString(),
-      redirect: "follow",
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+      callbackUrl: "/dashboard",
     });
-    if (!res.ok) setError("Invalid credentials");
-    else window.location.href = "/";
+    if (!res || res.error) {
+      setError("Invalid credentials");
+      return;
+    }
+    window.location.href = res.url || "/dashboard";
   }
 
   return (
