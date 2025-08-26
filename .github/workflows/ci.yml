@@ -46,39 +46,49 @@ jobs:
   db-check:
     name: Prisma migration status (optional)
     runs-on: ubuntu-latest
-    if: ${{ secrets.DATABASE_URL != '' }}
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     steps:
+      - name: Skip if DATABASE_URL is not set
+        if: ${{ env.DATABASE_URL == '' }}
+        run: echo "DATABASE_URL not set; skipping db-check job steps."
+
       - name: Checkout
+        if: ${{ env.DATABASE_URL != '' }}
         uses: actions/checkout@v4
 
       - name: Setup Node
+        if: ${{ env.DATABASE_URL != '' }}
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
           cache: npm
 
       - name: Install dependencies
+        if: ${{ env.DATABASE_URL != '' }}
         run: npm ci
 
       - name: Generate Prisma Client
+        if: ${{ env.DATABASE_URL != '' && hashFiles('prisma/schema.prisma') != '' }}
         run: npx prisma generate
-        if: ${{ hashFiles('prisma/schema.prisma') != '' }}
 
       - name: Validate Prisma schema
+        if: ${{ env.DATABASE_URL != '' && hashFiles('prisma/schema.prisma') != '' }}
         run: npx prisma validate
-        if: ${{ hashFiles('prisma/schema.prisma') != '' }}
 
       - name: Check migration status against DB
-        if: ${{ hashFiles('prisma/migrations/**') != '' && secrets.DATABASE_URL != '' }}
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        if: ${{ env.DATABASE_URL != '' && hashFiles('prisma/migrations/**') != '' }}
         run: |
           npx prisma migrate status --schema prisma/schema.prisma
 
   vercel-preview:
     name: Vercel Preview (optional)
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' && secrets.VERCEL_TOKEN != '' && secrets.VERCEL_ORG_ID != '' && secrets.VERCEL_PROJECT_ID != '' }}
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    if: ${{ github.event_name == 'pull_request' && env.VERCEL_TOKEN != '' && env.VERCEL_ORG_ID != '' && env.VERCEL_PROJECT_ID != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -97,18 +107,10 @@ jobs:
         if: ${{ hashFiles('prisma/schema.prisma') != '' }}
 
       - name: Pull Vercel env (preview)
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: npx vercel pull --yes --environment=preview --token "$VERCEL_TOKEN"
+  run: npx vercel pull --yes --environment=preview --token "$VERCEL_TOKEN"
 
       - name: Build with Vercel
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: npx vercel build --token "$VERCEL_TOKEN"
 
       - name: Deploy preview
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: npx vercel deploy --prebuilt --token "$VERCEL_TOKEN"
