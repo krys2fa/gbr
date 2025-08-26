@@ -3,10 +3,7 @@ import type { NextRequest } from 'next/server';
 
 // Very light stub for RBAC. In production, replace with Auth.js/Clerk and JWTs.
 // For now, accept header: Authorization: Role <ROLE_NAME>
-const PUBLIC_PATHS = [
-  '/',
-  '/api/valuation',
-];
+const PUBLIC_PATHS = ['/', '/signin', '/api/valuation'];
 
 const ROLE_PATH_RULES: Array<{ path: RegExp; roles: string[] }> = [
   { path: /^\/api\/cases/i, roles: ['AGENT', 'ADMIN', 'SUPERADMIN'] },
@@ -18,6 +15,7 @@ export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   if (PUBLIC_PATHS.includes(pathname)) return NextResponse.next();
 
+  if (pathname.startsWith('/api/auth')) return NextResponse.next();
   const rule = ROLE_PATH_RULES.find(r => r.path.test(pathname));
   if (!rule) return NextResponse.next();
 
