@@ -1,0 +1,53 @@
+name: Switch default branch to main and delete master
+
+on:
+  workflow_dispatch:
+    inputs:
+      keepMaster:
+        description: Keep the master branch (set to true to skip deletion)
+        required: false
+        default: 'false'
+
+permissions:
+  contents: read
+
+env:
+  ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+
+jobs:
+  switch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check ADMIN_TOKEN
+        run: |
+          if [ -z "${ADMIN_TOKEN}" ]; then
+            echo "ADMIN_TOKEN secret not set. Cannot change default branch or delete remote branches.";
+            exit 0;
+          fi
+      - name: Set default branch to main
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ env.ADMIN_TOKEN }}
+          script: |
+            await github.rest.repos.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              default_branch: 'main'
+            });
+            core.info('Default branch set to main');
+      - name: Delete remote master branch
+        if: ${{ github.event.inputs.keepMaster != 'true' }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ env.ADMIN_TOKEN }}
+          script: |
+            try {
+              await github.rest.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'heads/master',
+              });
+              core.info('Deleted remote branch master');
+            } catch (e) {
+              core.warning(`Could not delete remote master: ${e.message}`);
+            }
