@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { signIn } from "next-auth/react";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -22,21 +21,12 @@ export default function SignInPage() {
       .catch(() => setSetup({ hasDatabase: false, hasUsers: false }));
   }, []);
 
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(undefined);
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-      callbackUrl: "/dashboard",
-    });
-    if (!res || res.error) {
-      setError("Invalid credentials");
-      return;
-    }
-    window.location.href = res.url || "/dashboard";
-  }
+  const [csrfToken, setCsrfToken] = useState<string | undefined>();
+  useEffect(() => {
+    fetch("/api/auth/csrf")
+      .then(async (r) => setCsrfToken((await r.json())?.csrfToken))
+      .catch(() => setCsrfToken(undefined));
+  }, []);
 
   return (
     <div className="card">
@@ -86,18 +76,15 @@ export default function SignInPage() {
                   onClick={async () => {
                     try {
                       setCreating(true);
-                      const res = await fetch(
-                        "/api/setup/create-first-admin",
-                        {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({
-                            email: adminEmail,
-                            password: adminPassword,
-                            role: "ADMIN",
-                          }),
-                        }
-                      );
+                      const res = await fetch("/api/setup/create-first-admin", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          email: adminEmail,
+                          password: adminPassword,
+                          role: "ADMIN",
+                        }),
+                      });
                       if (!res.ok)
                         throw new Error((await res.json())?.error || "Failed");
                       alert("Admin created. You can sign in now.");
@@ -123,19 +110,27 @@ export default function SignInPage() {
                 </button>
               </div>
               <small>
-                Inline creation is enabled because ALLOW_INLINE_ADMIN_CREATE=true.
+                Inline creation is enabled because
+                ALLOW_INLINE_ADMIN_CREATE=true.
               </small>
             </div>
           )}
         </div>
       )}
-      <form onSubmit={submit} style={{ display: "grid", gap: 12 }}>
+      <form
+        method="POST"
+        action="/api/auth/callback/credentials"
+        style={{ display: "grid", gap: 12 }}
+      >
+        <input type="hidden" name="csrfToken" value={csrfToken || ""} />
+        <input type="hidden" name="callbackUrl" value="/dashboard" />
         <div>
           <label>Email</label>
           <input
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             type="email"
+            name="email"
             required
           />
         </div>
@@ -145,6 +140,7 @@ export default function SignInPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             type="password"
+            name="password"
             required
           />
         </div>
