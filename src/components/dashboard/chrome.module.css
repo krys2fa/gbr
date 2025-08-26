@@ -1,4 +1,4 @@
-.gradientBg{ background: linear-gradient(120deg,#eef2ff,#f8fafc) }
+.gradientBg{ background: linear-gradient(120deg, color-mix(in oklab, var(--bg-1), white 10%), color-mix(in oklab, var(--bg-2), white 10%)) }
 .sidebarCard{ border-radius:20px; border:1px solid rgba(255,255,255,.45); box-shadow:0 12px 40px rgba(15,23,42,.08); margin:12px; height:calc(100vh - 24px); position:sticky; top:12px }
 .gridGap12{ display:grid; gap:12px }
 .rowBetween{ display:flex; align-items:center; justify-content:space-between }

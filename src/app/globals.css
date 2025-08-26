@@ -5,7 +5,7 @@ input,select,button,textarea{font:inherit}
 label{display:block;margin:8px 0 4px}
 input,select,textarea{width:100%;padding:8px;border:1px solid #ddd;border-radius:6px}
 .input{width:100%;padding:8px 10px;border-radius:8px;background:rgba(0,0,0,0.08);border:1px solid var(--glass-stroke);color:var(--ink)}
-button{padding:10px 14px;border-radius:6px;border:1px solid #111;background:#111;color:#fff;cursor:pointer}
+button{padding:10px 14px;border-radius:8px;border:1px solid color-mix(in oklab, var(--brand), black 18%);background: var(--brand);color:#fff;cursor:pointer}
 .btn-inline{ display:inline-flex; align-items:center; gap:8px }
 button:disabled{opacity:.6;cursor:not-allowed}
 .card{border:1px solid #eee;border-radius:10px;padding:16px}
@@ -14,15 +14,33 @@ button:disabled{opacity:.6;cursor:not-allowed}
 
 /* Liquid Glass aesthetic */
 :root{
-	--glass-bg: rgba(255,255,255,0.55);
-	--glass-stroke: rgba(255,255,255,0.35);
-	--glass-shadow: rgba(16, 18, 27, 0.15);
-	--glass-blur: 16px;
-	--ink: #0f172a;
-	--ink-dim: #475569;
-	--brand: #0ea5e9;
-	--surface: #f8fafc;
-	--surface-2: rgba(255,255,255,0.7);
+		/* Core palette tuned for liquid glass */
+		--glass-bg: rgba(255,255,255,0.55);
+		--glass-stroke: rgba(255,255,255,0.45);
+		--glass-shadow: rgba(15, 23, 42, 0.14);
+		--glass-blur: 18px;
+		--ink: #0b1220;
+		--ink-dim: #536076;
+		--brand: #06b6d4; /* cyan-500 */
+		--brand-2: #8b5cf6; /* violet-500 */
+		--brand-soft: #c7f9ff;
+		--surface: #f9fbff;
+		--surface-2: rgba(255,255,255,0.72);
+
+		/* Background gradient tokens */
+		--bg-1: #e6f7ff; /* sky-50 */
+		--bg-2: #f5f3ff; /* violet-50 */
+		--bg-3: #e8fff6; /* mint-50 */
+}
+
+/* Subtle, vibrant background for the whole app */
+body{
+		background:
+			radial-gradient(1200px 600px at -10% -10%, color-mix(in oklab, var(--bg-3), white 40%) 0%, transparent 60%),
+			radial-gradient(1000px 600px at 110% 10%, color-mix(in oklab, var(--bg-1), white 30%) 0%, transparent 62%),
+			radial-gradient(900px 520px at 50% 120%, color-mix(in oklab, var(--bg-2), white 35%) 0%, transparent 60%),
+			linear-gradient(135deg, var(--bg-1), var(--bg-2));
+		color: var(--ink);
 }
 
 .glass{
