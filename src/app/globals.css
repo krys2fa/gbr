@@ -4,7 +4,9 @@ body{margin:0;font-family:var(--font-geist-sans),ui-sans-serif,system-ui,-apple-
 input,select,button,textarea{font:inherit}
 label{display:block;margin:8px 0 4px}
 input,select,textarea{width:100%;padding:8px;border:1px solid #ddd;border-radius:6px}
+.input{width:100%;padding:8px 10px;border-radius:8px;background:rgba(0,0,0,0.08);border:1px solid var(--glass-stroke);color:var(--ink)}
 button{padding:10px 14px;border-radius:6px;border:1px solid #111;background:#111;color:#fff;cursor:pointer}
+.btn-inline{ display:inline-flex; align-items:center; gap:8px }
 button:disabled{opacity:.6;cursor:not-allowed}
 .card{border:1px solid #eee;border-radius:10px;padding:16px}
 .row{display:flex;gap:12px}
@@ -51,6 +53,10 @@ button:disabled{opacity:.6;cursor:not-allowed}
 }
 .icon-btn:hover{ box-shadow: 0 6px 16px var(--glass-shadow); }
 .icon-btn:focus{ outline: 2px solid color-mix(in oklab, var(--brand), white 70%); outline-offset: 2px; }
+
+/* Button helpers */
+.btn-glass{ border: 1px solid var(--glass-stroke) !important; background: var(--surface-2) !important; color: var(--ink) !important; }
+.btn-glass:hover{ box-shadow: 0 6px 16px var(--glass-shadow); }
 
 .badge{
 	position: absolute;

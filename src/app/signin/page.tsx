@@ -30,7 +30,16 @@ export default function SignInPage() {
 
   return (
     <div className="card">
-      <h1>Sign in</h1>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <img
+          src="/goldbod-logo.webp"
+          alt="GoldBod"
+          width={28}
+          height={28}
+          style={{ borderRadius: 6 }}
+        />
+        <h1 style={{ margin: 0 }}>Sign in</h1>
+      </div>
       {setup && setup.hasDatabase && !setup.hasUsers && (
         <div
           style={{

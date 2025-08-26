@@ -1,0 +1,14 @@
+{
+  "name": "GoldBod Registry",
+  "short_name": "GoldBod",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "theme_color": "#111111",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}

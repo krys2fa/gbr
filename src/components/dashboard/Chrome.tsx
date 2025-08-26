@@ -32,7 +32,22 @@ export function DashboardChrome({
         <div className="only-mobile" style={{ display: "none" }} />
         <div className={styles.gridGap12}>
           <div className={styles.rowBetween}>
-            <div className={styles.fw700}>GoldBod</div>
+            <div className={styles.fw700}>
+              <Link
+                href={"/" as Route}
+                className={`glass-press ${styles.row}`}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <img
+                  src="/goldbod-logo.webp"
+                  alt="GoldBod"
+                  width={24}
+                  height={24}
+                  style={{ borderRadius: 6 }}
+                />
+                <span>GoldBod</span>
+              </Link>
+            </div>
             <div className="hide-desktop" style={{ display: "none" }}>
               <button
                 aria-label="Close menu"
@@ -79,6 +94,7 @@ export function DashboardChrome({
               {items.map((i) => {
                 const isActive =
                   pathname === i.href ||
+                  pathname.startsWith(`/(${"app"})${i.href}`) ||
                   (i.href !== "/" && pathname.startsWith(i.href));
                 return (
                   <li key={i.label}>
@@ -111,7 +127,20 @@ export function DashboardChrome({
             >
               <Menu size={20} />
             </button>
-            <strong>Dashboard</strong>
+            <Link
+              href={"/" as Route}
+              className={styles.row}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <img
+                src="/goldbod-logo.webp"
+                alt="GoldBod"
+                width={20}
+                height={20}
+                style={{ borderRadius: 4 }}
+              />
+              <strong>Dashboard</strong>
+            </Link>
           </div>
           <NotificationBell />
         </div>
@@ -173,13 +202,27 @@ export function DashboardChrome({
 
       <style jsx global>{`
         @keyframes slide-in {
-          from { transform: translateX(-8px); opacity: 0.8; }
-          to { transform: none; opacity: 1; }
+          from {
+            transform: translateX(-8px);
+            opacity: 0.8;
+          }
+          to {
+            transform: none;
+            opacity: 1;
+          }
         }
-        @media (min-width: 769px) { .hide-desktop { display: none !important; } }
+        @media (min-width: 769px) {
+          .hide-desktop {
+            display: none !important;
+          }
+        }
         @media (max-width: 768px) {
-          .shell { grid-template-columns: 1fr !important; }
-          .sidebar { display: none; }
+          .shell {
+            grid-template-columns: 1fr !important;
+          }
+          .sidebar {
+            display: none;
+          }
         }
       `}</style>
     </div>

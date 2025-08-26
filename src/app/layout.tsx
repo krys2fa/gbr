@@ -5,6 +5,11 @@ import { GeistSans } from "geist/font/sans";
 export const metadata: Metadata = {
   title: "GoldBod Registry",
   description: "Evaluate gold and process payments for sales and exports.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
