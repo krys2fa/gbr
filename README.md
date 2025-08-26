@@ -37,6 +37,22 @@ Deploy (free)
 3. Import into Vercel → set env vars → deploy.
 4. Run `npx prisma migrate deploy` in Vercel Build Command (or a postdeploy script).
 
+Seeding an admin user
+
+- Ensure `DATABASE_URL` is set and DB is reachable.
+- Optional envs: `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_ROLE` (ADMIN|SUPERADMIN)
+- Run locally:
+  - Windows PowerShell
+    - npm run db:seed
+  - Or set envs inline (PowerShell):
+    - $env:ADMIN_EMAIL="admin@example.com"; $env:ADMIN_PASSWORD="YourPass123!"; npm run db:seed
+
+Inline first admin (optional)
+
+- Set `ALLOW_INLINE_ADMIN_CREATE=true` and deploy/start the app.
+- Go to `/signin`. If no users are found, an inline form appears to create the first admin securely.
+- Turn this flag back to `false` after creating the initial admin.
+
 Security
 
 - Server-side validation (Zod)
