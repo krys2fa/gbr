@@ -3,7 +3,7 @@ name: Repository labels
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main]
 
 permissions:
   contents: read

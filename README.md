@@ -67,7 +67,7 @@ Next steps
 
 ## Contributing and Git workflow
 
-This repo uses a lightweight trunk-based flow with feature branches, Conventional Commits, CI checks on PRs, and squash merges into `master`.
+This repo uses a lightweight trunk-based flow with feature branches, Conventional Commits, CI checks on PRs, and squash merges into `main`.
 
 Branch naming
 
@@ -93,7 +93,7 @@ Commit messages (Conventional Commits)
 Before you start
 
 1. Sync trunk and create a branch
-   - `git checkout master`
+  - `git checkout main`
    - `git pull --ff-only`
    - `git switch -c feat/your-branch-name`
 2. Install deps and generate Prisma client if needed
@@ -117,7 +117,7 @@ Database changes
 Push and open a PR
 
 1. Push your branch: `git push -u origin <branch>`
-2. Open a PR to `master` in GitHub
+2. Open a PR to `main` in GitHub
    - Title should follow Conventional Commit style (e.g., `feat(auth): add RBAC`)
    - Link issues using “Closes #123” where applicable
    - Keep PRs focused and under ~300 lines when possible; stack larger work into smaller PRs
@@ -136,12 +136,12 @@ Reviews and merging
 - Address review comments with follow-up commits (avoid force-push unless requested)
 - Prefer “Squash and merge” with a clean, conventional PR title
 - After merge:
-  - `git checkout master && git pull --ff-only`
+  - `git checkout main && git pull --ff-only`
   - Delete your branch locally and on origin (`git branch -d <branch>` / delete via GitHub)
 
 Branch protection (maintainers)
 
-- Run the "Configure branch protection" workflow from Actions to require the PR title check (Semantic Pull Request) on `master`.
+- Run the "Configure branch protection" workflow from Actions to require the PR title check (Semantic Pull Request) on `main`.
 - This requires setting a repo secret `ADMIN_TOKEN` with a token that has admin:repo_hook and repo permissions.
 
 Hotfixes

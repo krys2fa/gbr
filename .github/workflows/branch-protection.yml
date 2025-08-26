@@ -6,7 +6,7 @@ on:
       branch:
         description: Branch to protect
         required: false
-        default: master
+        default: main
       approvals:
         description: Required approving reviews (0-2)
         required: false
@@ -30,13 +30,13 @@ jobs:
       - name: Require Conventional Commit PR title check
         uses: actions/github-script@v7
         env:
-          BRANCH: ${{ github.event.inputs.branch || 'master' }}
+          BRANCH: ${{ github.event.inputs.branch || 'main' }}
           APPROVALS: ${{ github.event.inputs.approvals || '1' }}
           TOKEN: ${{ secrets.ADMIN_TOKEN }}
         with:
           github-token: ${{ env.ADMIN_TOKEN }}
           script: |
-            const branch = process.env.BRANCH || 'master';
+            const branch = process.env.BRANCH || 'main';
             const approvals = Math.max(0, Math.min(2, parseInt(process.env.APPROVALS || '1', 10)));
             // Require the status check from the PR title linter action.
             // The check run created by amannn/action-semantic-pull-request is named "Semantic Pull Request".
