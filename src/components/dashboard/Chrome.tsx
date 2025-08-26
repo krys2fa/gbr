@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { Route } from "next";
+import Image from "next/image";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { SignOutButton } from "@/components/SignOutButton";
 import { usePathname } from "next/navigation";
@@ -38,7 +39,7 @@ export function DashboardChrome({
                 className={`glass-press ${styles.row}`}
                 style={{ textDecoration: "none", color: "inherit" }}
               >
-                <img
+                <Image
                   src="/goldbod-logo.webp"
                   alt="GoldBod"
                   width={24}
@@ -132,7 +133,7 @@ export function DashboardChrome({
               className={styles.row}
               style={{ textDecoration: "none", color: "inherit" }}
             >
-              <img
+              <Image
                 src="/goldbod-logo.webp"
                 alt="GoldBod"
                 width={20}

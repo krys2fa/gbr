@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
@@ -31,7 +32,7 @@ export default function SignInPage() {
   return (
     <div className="card">
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <img
+        <Image
           src="/goldbod-logo.webp"
           alt="GoldBod"
           width={28}

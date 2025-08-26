@@ -1,4 +1,5 @@
 import { prisma } from "@/server/db";
+import Image from "next/image";
 import Link from "next/link";
 
 export default async function SealPrintPage({
@@ -33,7 +34,7 @@ export default async function SealPrintPage({
         </button>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <img
+        <Image
           src="/goldbod-logo.webp"
           alt="GoldBod"
           width={28}
