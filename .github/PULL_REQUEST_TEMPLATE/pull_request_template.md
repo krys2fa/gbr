@@ -2,7 +2,7 @@
 
 Provide a brief, user-focused summary of what this PR changes and why.
 
-- Type: feat | fix | chore | refactor | docs | test | ci
+- Type: feat | fix | chore | refactor | docs | test | ci (select one; will auto-label)
 - Scope: <area, e.g., auth, dashboard, prisma>
 - Linked issues: Closes #
 
