@@ -14,16 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${GeistSans.variable} antialiased`}>
-        <header
-          style={{ padding: "12px 16px", borderBottom: "1px solid #eee" }}
-        >
-          <strong>GoldBod Registry</strong>
-        </header>
-        <main style={{ maxWidth: 960, margin: "24px auto", padding: "0 16px" }}>
-          {children}
-        </main>
-      </body>
+      <body className={`${GeistSans.variable} antialiased`}>{children}</body>
     </html>
   );
 }
