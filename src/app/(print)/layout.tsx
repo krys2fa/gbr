@@ -1,10 +1,7 @@
 import type { ReactNode } from "react";
 
 export default function PrintLayout({ children }: { children: ReactNode }) {
-  return (
-    <div>
-      {children}
-      <style jsx global>{`
+  const styles = `
         @page {
           size: A4;
           margin: 16mm;
@@ -51,7 +48,11 @@ export default function PrintLayout({ children }: { children: ReactNode }) {
           border-top: 1px solid #eee;
           margin: 12px 0;
         }
-      `}</style>
+      `;
+  return (
+    <div>
+      {children}
+      <style dangerouslySetInnerHTML={{ __html: styles }} />
     </div>
   );
 }
