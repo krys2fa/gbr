@@ -19,19 +19,35 @@ export async function POST(req: Request) {
       const user = await prisma.user.upsert({
         where: { email: parsed.applicantEmail },
         update: {},
-        create: { email: parsed.applicantEmail, role: 'COMPANIES' as any },
+        create: { email: parsed.applicantEmail, role: "COMPANIES" as any },
       });
-      const value = valuationUSD({ karat: parsed.karat, weightGrams: parsed.weightGrams, impuritiesPct: parsed.impuritiesPct }).net;
+      const value = valuationUSD({
+        karat: parsed.karat,
+        weightGrams: parsed.weightGrams,
+        impuritiesPct: parsed.impuritiesPct,
+      }).net;
       const ref = `GB-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
       const created = await prisma.case.create({
         data: {
           ref,
           applicantId: user.id,
-          status: 'SUBMITTED',
-          items: { create: [{ karat: parsed.karat, weightGrams: parsed.weightGrams, impurities: parsed.impuritiesPct, valuation: Number(value.toFixed(2)) }] },
+          status: "SUBMITTED",
+          items: {
+            create: [
+              {
+                karat: parsed.karat,
+                weightGrams: parsed.weightGrams,
+                impurities: parsed.impuritiesPct,
+                valuation: Number(value.toFixed(2)),
+              },
+            ],
+          },
         },
       });
-      return Response.json({ ref: created.ref, status: created.status }, { status: 201 });
+      return Response.json(
+        { ref: created.ref, status: created.status },
+        { status: 201 }
+      );
     }
     const ref = `GB-${Date.now().toString(36).toUpperCase()}`;
     return Response.json({ ref, status: "SUBMITTED" }, { status: 201 });
