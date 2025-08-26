@@ -22,16 +22,16 @@ model User {
 }
 
 model Case {
-  id         String     @id @default(cuid())
-  ref        String     @unique
-  applicant  User       @relation(fields: [applicantId], references: [id])
+  id          String     @id @default(cuid())
+  ref         String     @unique
+  applicant   User       @relation(fields: [applicantId], references: [id])
   applicantId String
-  status     CaseStatus @default(SUBMITTED)
-  items      GoldItem[]
-  payments   Payment[]
-  export     Export?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  status      CaseStatus @default(SUBMITTED)
+  items       GoldItem[]
+  payments    Payment[]
+  export      Export?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model GoldItem {
@@ -40,29 +40,32 @@ model GoldItem {
   caseId      String
   karat       Int
   weightGrams Float
-  impurities  Float    @default(0)
-  valuation   Decimal  @db.Decimal(18,2)
+  impurities  Float   @default(0)
+  valuation   Decimal @db.Decimal(18, 2)
 }
 
 model Payment {
   id        String   @id @default(cuid())
   case      Case     @relation(fields: [caseId], references: [id])
   caseId    String
-  amount    Decimal  @db.Decimal(18,2)
+  amount    Decimal  @db.Decimal(18, 2)
   currency  String   @default("USD")
   method    String
-  reference String
+  reference String   @unique
   status    String   @default("pending")
   createdAt DateTime @default(now())
 }
 
 model Export {
-  id           String   @id @default(cuid())
-  case         Case     @relation(fields: [caseId], references: [id])
-  caseId       String   @unique
-  documentNo   String
-  destination  String
-  createdAt    DateTime @default(now())
+  id          String   @id @default(cuid())
+  case        Case     @relation(fields: [caseId], references: [id])
+  caseId      String   @unique
+  documentNo  String
+  destination String
+  createdAt   DateTime @default(now())
+
+  // Back-reference for one-to-one with AssayCertificate
+  assayCertificate AssayCertificate? @relation("ExportToAssay")
 }
 
 enum CaseStatus {
@@ -73,12 +76,35 @@ enum CaseStatus {
   EXPORTED
 }
 
+enum JobStatus {
+  PENDING_EVALUATION
+  EVALUATED
+  INVOICED
+  PAID
+  SEALED
+}
+
+enum ExporterType {
+  GOLDBOD
+  THIRD_PARTY
+  COMPANY
+  INDIVIDUAL
+}
+
+enum EvalMethod {
+  XRAY
+  WATER_DENSITY
+}
+
 enum Role {
   COMPANIES
   AGENT
   CASHIER
   ADMIN
   SUPERADMIN
+  CUSTOMS_OFFICER
+  TECHNICAL_DIRECTOR
+  EXPORTER
 }
 
 /// Auth.js / Prisma Adapter models
@@ -116,4 +142,123 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// Value types for valuation flows (e.g., who performs valuation)
+model ValueType {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  @@map("value_type")
+}
+
+// Certificate of Assay
+model AssayCertificate {
+  id               String   @id @default(cuid())
+  lots             Int?
+  grossWeightGrams Decimal  @db.Decimal(18, 2)
+  finenessPercent  Decimal  @db.Decimal(5, 2)
+  netWeightGrams   Decimal  @db.Decimal(18, 2)
+  netWeightOz      Decimal  @db.Decimal(12, 3)
+  customsSealNo    String?
+  pmmcSealNo       String?
+  otherSealNo      String?
+  certificateNo    String   @unique
+  date             DateTime
+  client           String
+  reference        String
+  exporter         String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Optional one-to-one link to an Export (typical in workflow)
+  export   Export? @relation("ExportToAssay", fields: [exportId], references: [id])
+  exportId String? @unique
+}
+
+// Job Cards capture shipment and buyer/exporter details
+model JobCard {
+  id                 String       @id @default(cuid())
+  ref                String       @unique
+  exporterType       ExporterType @default(GOLDBOD)
+  exporterName       String       @default("GOLDBOD")
+  buyerName          String
+  phone              String
+  address            String
+  tinNumber          String
+  destinationCountry String
+  deliveryLocation   String
+  consignee          String
+  notifiedParty      String
+  numberOfBoxes      Int
+  airwayBill         String
+  countryOfOrigin    String       @default("Ghana")
+  exporterReference  String
+  usdPrice           Decimal      @db.Decimal(18, 2)
+  totalWeight        Decimal      @db.Decimal(18, 3)
+  purityPercent      Decimal      @db.Decimal(5, 2)
+  status             JobStatus    @default(PENDING_EVALUATION)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  evaluations Evaluation[]
+  invoice     Invoice?
+  payments    JobPayment[]
+  seals       Seal?
+}
+
+// Evaluation of JobCards via XRAY or WATER_DENSITY; store assay-like fields
+model Evaluation {
+  id               String     @id @default(cuid())
+  jobCard          JobCard    @relation(fields: [jobCardId], references: [id])
+  jobCardId        String
+  method           EvalMethod
+  // Assay-like optional fields
+  lots             Int?
+  grossWeightGrams Decimal?   @db.Decimal(18, 2)
+  finenessPercent  Decimal?   @db.Decimal(5, 2)
+  netWeightGrams   Decimal?   @db.Decimal(18, 2)
+  netWeightOz      Decimal?   @db.Decimal(12, 3)
+  certificateNo    String?
+  notes            String?
+  createdAt        DateTime   @default(now())
+}
+
+// Invoices for JobCards
+model Invoice {
+  id        String   @id @default(cuid())
+  jobCard   JobCard  @relation(fields: [jobCardId], references: [id])
+  jobCardId String   @unique
+  invoiceNo String   @unique
+  amount    Decimal  @db.Decimal(18, 2)
+  currency  String   @default("USD")
+  createdAt DateTime @default(now())
+}
+
+// Payments against JobCards
+model JobPayment {
+  id         String   @id @default(cuid())
+  jobCard    JobCard  @relation(fields: [jobCardId], references: [id])
+  jobCardId  String
+  amount     Decimal  @db.Decimal(18, 2)
+  currency   String   @default("USD")
+  method     String
+  reference  String   @unique
+  receiptNo  String?
+  receiptUrl String?
+  createdAt  DateTime @default(now())
+}
+
+// Seals information for JobCards
+model Seal {
+  id                     String   @id @default(cuid())
+  jobCard                JobCard  @relation(fields: [jobCardId], references: [id])
+  jobCardId              String   @unique
+  customsName            String
+  customsNumber          String
+  securitySealNumbers    String
+  pmmcSealNo             String
+  assayCertificateNumber String
+  createdAt              DateTime @default(now())
 }
