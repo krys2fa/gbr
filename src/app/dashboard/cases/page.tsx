@@ -10,7 +10,7 @@ export default async function CasesPage() {
   const allowed = ["AGENT", "ADMIN", "SUPERADMIN", "COMPANIES"];
   if (!allowed.includes(role)) redirect("/dashboard");
   const hasDb = !!process.env.DATABASE_URL;
-  let cases: Array<{ ref: string; status: string; createdAt: Date } > = [];
+  let cases: Array<{ ref: string; status: string; createdAt: Date }> = [];
   if (hasDb) {
     cases = await prisma.case.findMany({
       select: { ref: true, status: true, createdAt: true },
@@ -22,7 +22,9 @@ export default async function CasesPage() {
     <div>
       <h1>Cases</h1>
       {!hasDb && (
-        <p style={{ color: "#666" }}>Database not configured. Listing unavailable.</p>
+        <p style={{ color: "#666" }}>
+          Database not configured. Listing unavailable.
+        </p>
       )}
       {hasDb && (
         <table style={{ width: "100%", borderCollapse: "collapse" }}>

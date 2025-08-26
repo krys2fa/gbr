@@ -10,7 +10,11 @@ export default async function ExportsPage() {
   const allowed = ["ADMIN", "SUPERADMIN", "AGENT"];
   if (!allowed.includes(role)) redirect("/dashboard");
   const hasDb = !!process.env.DATABASE_URL;
-  let exportsList: Array<{ documentNo: string; destination: string; createdAt: Date }> = [];
+  let exportsList: Array<{
+    documentNo: string;
+    destination: string;
+    createdAt: Date;
+  }> = [];
   if (hasDb) {
     exportsList = await prisma.export.findMany({
       select: { documentNo: true, destination: true, createdAt: true },
@@ -22,7 +26,9 @@ export default async function ExportsPage() {
     <div>
       <h1>Exports</h1>
       {!hasDb && (
-        <p style={{ color: "#666" }}>Database not configured. Listing unavailable.</p>
+        <p style={{ color: "#666" }}>
+          Database not configured. Listing unavailable.
+        </p>
       )}
       {hasDb && (
         <table style={{ width: "100%", borderCollapse: "collapse" }}>

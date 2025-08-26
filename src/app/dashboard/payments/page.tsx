@@ -10,10 +10,20 @@ export default async function PaymentsPage() {
   const allowed = ["CASHIER", "ADMIN", "SUPERADMIN"];
   if (!allowed.includes(role)) redirect("/dashboard");
   const hasDb = !!process.env.DATABASE_URL;
-  let payments: Array<{ reference: string; amount: any; currency: string; createdAt: Date }> = [];
+  let payments: Array<{
+    reference: string;
+    amount: any;
+    currency: string;
+    createdAt: Date;
+  }> = [];
   if (hasDb) {
     payments = await prisma.payment.findMany({
-      select: { reference: true, amount: true, currency: true, createdAt: true },
+      select: {
+        reference: true,
+        amount: true,
+        currency: true,
+        createdAt: true,
+      },
       orderBy: { createdAt: "desc" },
       take: 20,
     });
@@ -22,7 +32,9 @@ export default async function PaymentsPage() {
     <div>
       <h1>Payments</h1>
       {!hasDb && (
-        <p style={{ color: "#666" }}>Database not configured. Listing unavailable.</p>
+        <p style={{ color: "#666" }}>
+          Database not configured. Listing unavailable.
+        </p>
       )}
       {hasDb && (
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -38,7 +50,9 @@ export default async function PaymentsPage() {
             {payments.map((p) => (
               <tr key={p.reference}>
                 <td>{p.reference}</td>
-                <td style={{ textAlign: "right" }}>{p.amount?.toString?.() ?? p.amount}</td>
+                <td style={{ textAlign: "right" }}>
+                  {p.amount?.toString?.() ?? p.amount}
+                </td>
                 <td>{p.currency}</td>
                 <td>{new Date(p.createdAt).toLocaleString()}</td>
               </tr>
