@@ -9,11 +9,13 @@ export default async function DashboardHome() {
   const role = (session.user as any)?.role || "AUTHENTICATED";
   return (
     <div>
-      <h1 className={styles.pageTitle}>Dashboard</h1>
-      <p>Welcome back{session.user?.name ? `, ${session.user.name}` : ""}.</p>
-      <p>
-        Your role: <strong>{role}</strong>
-      </p>
+      <div className={styles.mobileOnly}>
+        <h1 className={styles.pageTitle}>Dashboard</h1>
+        <p>Welcome back{session.user?.name ? `, ${session.user.name}` : ""}.</p>
+        <p>
+          Your role: <strong>{role}</strong>
+        </p>
+      </div>
 
       <div className={styles.gridStats}>
         {[

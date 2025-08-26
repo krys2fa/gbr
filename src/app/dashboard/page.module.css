@@ -10,3 +10,7 @@
 
 /* Page title */
 .pageTitle{ margin-top:0 }
+
+/* Visible only on mobile screens */
+.mobileOnly{ display:block }
+@media (min-width: 769px){ .mobileOnly{ display:none } }

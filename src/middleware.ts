@@ -6,8 +6,22 @@ import type { NextRequest } from "next/server";
 const PUBLIC_PATHS = ["/", "/signin", "/api/valuation"];
 
 const ROLE_PATH_RULES: Array<{ path: RegExp; roles: string[] }> = [
-  { path: /^\/api\/cases/i, roles: ["AGENT", "ADMIN", "SUPERADMIN"] },
+  {
+    path: /^\/api\/cases/i,
+    roles: ["AGENT", "ADMIN", "SUPERADMIN", "TECHNICAL_DIRECTOR"],
+  },
   { path: /^\/api\/payments/i, roles: ["CASHIER", "ADMIN", "SUPERADMIN"] },
+  {
+    path: /^\/api\/exports/i,
+    roles: [
+      "AGENT",
+      "ADMIN",
+      "SUPERADMIN",
+      "CUSTOMS_OFFICER",
+      "TECHNICAL_DIRECTOR",
+      "EXPORTER",
+    ],
+  },
   { path: /^\/api\/admin/i, roles: ["ADMIN", "SUPERADMIN"] },
 ];
 
