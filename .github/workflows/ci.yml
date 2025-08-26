@@ -107,7 +107,7 @@ jobs:
         if: ${{ hashFiles('prisma/schema.prisma') != '' }}
 
       - name: Pull Vercel env (preview)
-  run: npx vercel pull --yes --environment=preview --token "$VERCEL_TOKEN"
+        run: npx vercel pull --yes --environment=preview --token "$VERCEL_TOKEN"
 
       - name: Build with Vercel
         run: npx vercel build --token "$VERCEL_TOKEN"
