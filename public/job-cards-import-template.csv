@@ -1,0 +1,2 @@
+ref,exporterType,exporterName,buyerName,phone,address,tinNumber,destinationCountry,deliveryLocation,consignee,notifiedParty,numberOfBoxes,airwayBill,countryOfOrigin,exporterReference,usdPrice,totalWeight,purityPercent
+GB-2025-0001,GOLDBOD,GOLDBOD,Acme Buyer,+233201234567,12 High St Accra,TIN-123456789,UAE,Dubai Cargo Village,Acme Consignee,Acme Notified,2,AWB123456,Ghana,EXP-REF-001,125000,10250,96.5
