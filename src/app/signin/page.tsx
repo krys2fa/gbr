@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
 import { notify } from "@/lib/notify";
 import { Button } from "@/components/ui/Button";
 
@@ -210,7 +210,19 @@ export default function SignInPage() {
                 Use at least 8 characters, including a number or symbol.
               </div>
             </div>
-            <Button type="submit" variant="primary">
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              leftIcon={<LogIn size={18} />}
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
               Sign in
             </Button>
             <div
