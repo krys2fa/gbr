@@ -31,9 +31,6 @@ export function JobCardsList({
       : { staleTime: 20_000 }
   );
   const d = data ?? initial;
-  if (!d) {
-    return <TableSkeleton rows={8} columns={4} />;
-  }
   const totalPages = Math.max(
     1,
     Math.ceil((d?.total ?? 0) / (d?.pageSize ?? 10))
@@ -69,6 +66,9 @@ export function JobCardsList({
       queryFn: () => fetchJSON<Resp>(url),
       staleTime: 20_000,
     });
+  if (!d) {
+    return <TableSkeleton rows={8} columns={4} />;
+  }
   return (
     <>
       <div
