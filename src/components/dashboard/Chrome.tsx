@@ -3,7 +3,6 @@ import { useState } from "react";
 import Link from "next/link";
 import type { Route } from "next";
 import Image from "next/image";
-import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { SignOutButton } from "@/components/SignOutButton";
 import { usePathname } from "next/navigation";
 import styles from "./chrome.module.css";
@@ -42,11 +41,11 @@ export function DashboardChrome({
                 <Image
                   src="/goldbod-logo.webp"
                   alt="GoldBod"
-                  width={24}
-                  height={24}
-                  style={{ borderRadius: 6 }}
+                  width={200}
+                  height={80}
+                  style={{ borderRadius: 6, backgroundColor: "black" }}
                 />
-                <span>GoldBod</span>
+                {/* <span>GoldBod</span> */}
               </Link>
             </div>
             <div className="hide-desktop" style={{ display: "none" }}>
@@ -101,6 +100,7 @@ export function DashboardChrome({
                   <li key={i.label}>
                     <Link
                       href={i.href}
+                      prefetch
                       className={`glass-press ${styles.navItem} ${
                         isActive ? styles.active : ""
                       } ${styles.sheen}`}
@@ -118,32 +118,15 @@ export function DashboardChrome({
 
       {/* Content area */}
       <section className="content">
-        {/* Top bar (mobile) */}
-        <div className={`glass ${styles.topBar}`}>
-          <div className={styles.row}>
-            <button
-              aria-label="Open menu"
-              className="icon-btn hide-desktop"
-              onClick={() => setOpen(true)}
-            >
-              <Menu size={20} />
-            </button>
-            <Link
-              href={"/" as Route}
-              className={styles.row}
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              <Image
-                src="/goldbod-logo.webp"
-                alt="GoldBod"
-                width={20}
-                height={20}
-                style={{ borderRadius: 4 }}
-              />
-              <strong>Dashboard</strong>
-            </Link>
-          </div>
-          <NotificationBell />
+        {/* Mobile-only hamburger (no top chrome on desktop) */}
+        <div className={styles.topBar}>
+          <button
+            aria-label="Open menu"
+            className="icon-btn hide-desktop"
+            onClick={() => setOpen(true)}
+          >
+            <Menu size={20} />
+          </button>
         </div>
 
         <div>{children}</div>
@@ -188,6 +171,7 @@ export function DashboardChrome({
                 <li key={i.label}>
                   <Link
                     href={i.href}
+                    prefetch
                     onClick={() => setOpen(false)}
                     className={`glass-press ${styles.navItem}`}
                   >
