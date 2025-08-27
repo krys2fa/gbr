@@ -1,6 +1,7 @@
 import { prisma } from "@/server/db";
 import Image from "next/image";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 
 export default async function SealPrintPage({
   params,
@@ -29,9 +30,9 @@ export default async function SealPrintPage({
         }}
       >
         <Link href="/seals">Back</Link>
-        <button onClick={() => window.print()} className="btn-glass">
+        <Button variant="glass" onClick={() => window.print()}>
           Print
-        </button>
+        </Button>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <Image

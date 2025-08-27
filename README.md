@@ -1,4 +1,4 @@
-# GoldBod Registry (MVP)
+# GBR (MVP)
 
 A minimal, secure-by-default web app for GoldBod to evaluate gold and process payments for sales and exports.
 

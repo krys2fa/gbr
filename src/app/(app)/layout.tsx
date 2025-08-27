@@ -11,6 +11,8 @@ import {
   CreditCard,
   Shield,
   Settings,
+  BarChart3,
+  Users,
 } from "lucide-react";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
@@ -44,6 +46,18 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         label: "Payments",
         icon: <CreditCard {...iconProps} />,
         roles: ["CASHIER", "ADMIN", "SUPERADMIN"],
+      },
+      {
+        href: "/reports" as Route,
+        label: "Reports",
+        icon: <BarChart3 {...iconProps} />,
+        roles: ["ADMIN", "SUPERADMIN", "TECHNICAL_DIRECTOR"],
+      },
+      {
+        href: "/users" as Route,
+        label: "Users",
+        icon: <Users {...iconProps} />,
+        roles: ["ADMIN", "SUPERADMIN"],
       },
       {
         href: "/seals" as Route,

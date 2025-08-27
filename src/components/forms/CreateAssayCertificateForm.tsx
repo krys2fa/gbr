@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Plus } from "lucide-react";
 
 export function CreateAssayCertificateForm() {
   const [loading, setLoading] = useState(false);
@@ -143,13 +145,18 @@ export function CreateAssayCertificateForm() {
           <input name="exporter" required className="input" />
         </label>
         <div>
-          <button
+          <Button
+            variant="primary"
             disabled={loading}
-            className="btn-glass btn-inline"
             type="submit"
+            leftIcon={<Plus size={16} />}
+            aria-label="Create Certificate"
+            title="Create Certificate"
           >
-            {loading ? "Submitting…" : "Create Certificate"}
-          </button>
+            <span className="label-desktop">
+              {loading ? "Submitting…" : "Create Certificate"}
+            </span>
+          </Button>
         </div>
         {msg && (
           <div style={{ color: msg.startsWith("Created") ? "#0a0" : "#a00" }}>

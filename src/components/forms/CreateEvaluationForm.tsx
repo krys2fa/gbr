@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Plus } from "lucide-react";
 
 export function CreateEvaluationForm() {
   const [loading, setLoading] = useState(false);
@@ -89,13 +91,18 @@ export function CreateEvaluationForm() {
       <div
         style={{ marginTop: 8, display: "flex", gap: 8, alignItems: "center" }}
       >
-        <button
-          className="btn-glass btn-inline"
+        <Button
+          variant="primary"
           disabled={loading}
           type="submit"
+          leftIcon={<Plus size={16} />}
+          aria-label="Add Evaluation"
+          title="Add Evaluation"
         >
-          {loading ? "Saving..." : "Add Evaluation"}
-        </button>
+          <span className="label-desktop">
+            {loading ? "Saving..." : "Add Evaluation"}
+          </span>
+        </Button>
         {error && <span style={{ color: "#f66" }}>{error}</span>}
       </div>
     </form>

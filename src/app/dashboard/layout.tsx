@@ -3,7 +3,17 @@ import type { Route } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { DashboardChrome } from "@/components/dashboard/Chrome";
-import { Home, Briefcase, CreditCard, Truck, Sparkles } from "lucide-react";
+import {
+  Home,
+  ClipboardList,
+  FlaskConical,
+  FileText,
+  CreditCard,
+  Shield,
+  Settings,
+  BarChart3,
+  Users,
+} from "lucide-react";
 
 type DashboardRoute =
   | "/dashboard"
@@ -28,16 +38,19 @@ export default async function DashboardLayout({
         icon: <Home {...iconProps} />,
       },
       {
-        href: "/cases" as Route,
-        label: "Cases",
-        icon: <Briefcase {...iconProps} />,
-        roles: [
-          "COMPANIES",
-          "AGENT",
-          "ADMIN",
-          "SUPERADMIN",
-          "TECHNICAL_DIRECTOR",
-        ],
+        href: "/job-cards" as Route,
+        label: "Job Cards",
+        icon: <ClipboardList {...iconProps} />,
+      },
+      {
+        href: "/evaluations" as Route,
+        label: "Evaluations",
+        icon: <FlaskConical {...iconProps} />,
+      },
+      {
+        href: "/invoices" as Route,
+        label: "Invoices",
+        icon: <FileText {...iconProps} />,
       },
       {
         href: "/payments" as Route,
@@ -46,22 +59,27 @@ export default async function DashboardLayout({
         roles: ["CASHIER", "ADMIN", "SUPERADMIN"],
       },
       {
-        href: "/exports" as Route,
-        label: "Exports",
-        icon: <Truck {...iconProps} />,
-        roles: [
-          "AGENT",
-          "ADMIN",
-          "SUPERADMIN",
-          "CUSTOMS_OFFICER",
-          "TECHNICAL_DIRECTOR",
-          "EXPORTER",
-        ],
+        href: "/reports" as Route,
+        label: "Reports",
+        icon: <BarChart3 {...iconProps} />,
+        roles: ["ADMIN", "SUPERADMIN", "TECHNICAL_DIRECTOR"],
       },
       {
-        href: "/" as Route,
-        label: "Valuation",
-        icon: <Sparkles {...iconProps} />,
+        href: "/users" as Route,
+        label: "Users",
+        icon: <Users {...iconProps} />,
+        roles: ["ADMIN", "SUPERADMIN"],
+      },
+      {
+        href: "/seals" as Route,
+        label: "Seals",
+        icon: <Shield {...iconProps} />,
+      },
+      {
+        href: "/settings" as Route,
+        label: "Settings",
+        icon: <Settings {...iconProps} />,
+        roles: ["ADMIN", "SUPERADMIN"],
       },
     ] as const
   ).filter(

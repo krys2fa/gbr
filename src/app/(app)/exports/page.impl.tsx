@@ -3,8 +3,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/server/db";
 import Link from "next/link";
-import { CreateExportForm } from "@/components/forms/CreateExportForm";
-import { CreateAssayCertificateForm } from "@/components/forms/CreateAssayCertificateForm";
+import { Button } from "@/components/ui/Button";
+import { ExportsList } from "./ExportsList.client";
+import { ExportsActionsBar } from "./ActionsBar.client";
 
 export default async function ExportsPage({
   searchParams,
@@ -61,18 +62,15 @@ export default async function ExportsPage({
     exportsList = list;
     total = cnt;
   }
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const buildHref = (p: number) => {
-    const params = new URLSearchParams();
-    if (documentNoQ) params.set("documentNo", documentNoQ);
-    if (destQ) params.set("destination", destQ);
-    params.set("page", String(p));
-    params.set("pageSize", String(pageSize));
-    return `/exports?${params.toString()}`;
-  };
+  const params = new URLSearchParams();
+  if (documentNoQ) params.set("documentNo", documentNoQ);
+  if (destQ) params.set("destination", destQ);
+  params.set("page", String(page));
+  params.set("pageSize", String(pageSize));
+  const apiUrl = `/api/exports?${params.toString()}`;
   return (
     <div>
-      <h1>Exports</h1>
+      <ExportsActionsBar total={total} />
       <form
         method="GET"
         className="glass"
@@ -110,75 +108,25 @@ export default async function ExportsPage({
             </select>
           </label>
           <div style={{ alignSelf: "end" }}>
-            <button className="btn-glass btn-inline" type="submit">
+            <Button variant="glass" type="submit">
               Filter
-            </button>
+            </Button>
           </div>
         </div>
         <input type="hidden" name="page" value="1" />
       </form>
-      <CreateExportForm />
-      <CreateAssayCertificateForm />
+      {/* Forms moved to modal in ActionsBar */}
       {!hasDb && (
         <p style={{ color: "#666" }}>
           Database not configured. Listing unavailable.
         </p>
       )}
       {hasDb && (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th align="left">Document No</th>
-              <th align="left">Destination</th>
-              <th align="left">Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {exportsList.map((e) => (
-              <tr key={e.documentNo}>
-                <td>{e.documentNo}</td>
-                <td>{e.destination}</td>
-                <td>{new Date(e.createdAt).toLocaleString()}</td>
-              </tr>
-            ))}
-            {exportsList.length === 0 && (
-              <tr>
-                <td colSpan={3} style={{ color: "#666" }}>
-                  No recent exports.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      )}
-      {hasDb && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: 12,
-          }}
-        >
-          <div>
-            Page {page} of {totalPages} ({total} total)
-          </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <Link
-              className="btn-glass btn-inline"
-              href={buildHref(Math.max(1, page - 1)) as any}
-              aria-disabled={page <= 1}
-            >
-              Prev
-            </Link>
-            <Link
-              className="btn-glass btn-inline"
-              href={buildHref(Math.min(totalPages, page + 1)) as any}
-              aria-disabled={page >= totalPages}
-            >
-              Next
-            </Link>
-          </div>
-        </div>
+        <ExportsList
+          queryKey={[{ documentNoQ, destQ, page, pageSize }]}
+          apiUrl={apiUrl}
+          initial={{ items: exportsList as any, total, page, pageSize }}
+        />
       )}
     </div>
   );

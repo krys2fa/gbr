@@ -1,5 +1,34 @@
-import { z } from "zod";
+import { NextResponse } from "next/server";
 import { prisma } from "@/server/db";
+
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const page = Math.max(1, parseInt(url.searchParams.get("page") || "1") || 1);
+  const pageSize = Math.min(
+    Math.max(parseInt(url.searchParams.get("pageSize") || "10") || 10, 5),
+    50
+  );
+  const documentNoQ = url.searchParams.get("documentNo") || undefined;
+  const destQ = url.searchParams.get("destination") || undefined;
+  const hasDb = !!process.env.DATABASE_URL;
+  if (!hasDb) return NextResponse.json({ items: [], total: 0, page, pageSize });
+  const where: any = {};
+  if (documentNoQ)
+    where.documentNo = { contains: documentNoQ, mode: "insensitive" };
+  if (destQ) where.destination = { contains: destQ, mode: "insensitive" };
+  const [items, total] = await (prisma as any).$transaction([
+    (prisma as any).export.findMany({
+      where,
+      select: { documentNo: true, destination: true, createdAt: true },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    (prisma as any).export.count({ where }),
+  ]);
+  return NextResponse.json({ items, total, page, pageSize });
+}
+import { z } from "zod";
 
 const CreateExportSchema = z.object({
   caseRef: z.string().min(3),

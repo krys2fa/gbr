@@ -2,8 +2,9 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/server/db";
-import Link from "next/link";
-import { CreatePaymentForm } from "@/components/forms/CreatePaymentForm";
+import { Button } from "@/components/ui/Button";
+import { PaymentsList } from "./PaymentsList.client";
+import { PaymentsActionsBar } from "./ActionsBar.client";
 
 export default async function PaymentsPage({
   searchParams,
@@ -57,18 +58,15 @@ export default async function PaymentsPage({
     payments = list;
     total = cnt;
   }
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const buildHref = (p: number) => {
-    const params = new URLSearchParams();
-    if (referenceQ) params.set("reference", referenceQ);
-    if (currencyQ) params.set("currency", currencyQ);
-    params.set("page", String(p));
-    params.set("pageSize", String(pageSize));
-    return `/payments?${params.toString()}`;
-  };
+  const params = new URLSearchParams();
+  if (referenceQ) params.set("reference", referenceQ);
+  if (currencyQ) params.set("currency", currencyQ);
+  params.set("page", String(page));
+  params.set("pageSize", String(pageSize));
+  const apiUrl = `/api/payments?${params.toString()}`;
   return (
     <div>
-      <h1>Payments</h1>
+      <PaymentsActionsBar total={total} />
       <form
         method="GET"
         className="glass"
@@ -106,78 +104,24 @@ export default async function PaymentsPage({
             </select>
           </label>
           <div style={{ alignSelf: "end" }}>
-            <button className="btn-glass btn-inline" type="submit">
+            <Button variant="glass" type="submit">
               Filter
-            </button>
+            </Button>
           </div>
         </div>
         <input type="hidden" name="page" value="1" />
       </form>
-      <CreatePaymentForm />
       {!hasDb && (
         <p style={{ color: "#666" }}>
           Database not configured. Listing unavailable.
         </p>
       )}
       {hasDb && (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th align="left">Reference</th>
-              <th align="right">Amount</th>
-              <th align="left">Currency</th>
-              <th align="left">Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {payments.map((p) => (
-              <tr key={p.reference}>
-                <td>{p.reference}</td>
-                <td style={{ textAlign: "right" }}>
-                  {p.amount?.toString?.() ?? p.amount}
-                </td>
-                <td>{p.currency}</td>
-                <td>{new Date(p.createdAt).toLocaleString()}</td>
-              </tr>
-            ))}
-            {payments.length === 0 && (
-              <tr>
-                <td colSpan={4} style={{ color: "#666" }}>
-                  No recent payments.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      )}
-      {hasDb && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: 12,
-          }}
-        >
-          <div>
-            Page {page} of {totalPages} ({total} total)
-          </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <Link
-              className="btn-glass btn-inline"
-              href={buildHref(Math.max(1, page - 1)) as any}
-              aria-disabled={page <= 1}
-            >
-              Prev
-            </Link>
-            <Link
-              className="btn-glass btn-inline"
-              href={buildHref(Math.min(totalPages, page + 1)) as any}
-              aria-disabled={page >= totalPages}
-            >
-              Next
-            </Link>
-          </div>
-        </div>
+        <PaymentsList
+          queryKey={[{ referenceQ, currencyQ, page, pageSize }]}
+          apiUrl={apiUrl}
+          initial={{ items: payments as any, total, page, pageSize }}
+        />
       )}
     </div>
   );

@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Plus } from "lucide-react";
 
 export function CreatePaymentForm() {
   const [loading, setLoading] = useState(false);
@@ -63,13 +65,18 @@ export function CreatePaymentForm() {
           <input name="reference" className="input" />
         </label>
         <div>
-          <button
+          <Button
+            variant="primary"
             disabled={loading}
-            className="btn-glass btn-inline"
             type="submit"
+            leftIcon={<Plus size={16} />}
+            aria-label="Record Payment"
+            title="Record Payment"
           >
-            {loading ? "Submitting…" : "Record"}
-          </button>
+            <span className="label-desktop">
+              {loading ? "Submitting…" : "Record"}
+            </span>
+          </Button>
         </div>
         {msg && (
           <div style={{ color: msg.includes("recorded") ? "#0a0" : "#a00" }}>

@@ -1,6 +1,8 @@
 "use client";
 import { signOut } from "next-auth/react";
 import { LogOut } from "lucide-react";
+import { notify } from "@/lib/notify";
+import { Button } from "@/components/ui/Button";
 
 export function SignOutButton({
   label = "Sign out",
@@ -10,13 +12,17 @@ export function SignOutButton({
   callbackUrl?: string;
 }) {
   return (
-    <button
-      onClick={() => signOut({ callbackUrl })}
-      className="glass-press btn-inline btn-glass"
+    <Button
+      variant="glass"
+      size="sm"
+      onClick={() => {
+        notify.info("Signing out…");
+        signOut({ callbackUrl });
+      }}
       aria-label={label}
+      leftIcon={<LogOut size={16} />}
     >
-      <LogOut size={16} />
-      <span>{label}</span>
-    </button>
+      {label}
+    </Button>
   );
 }

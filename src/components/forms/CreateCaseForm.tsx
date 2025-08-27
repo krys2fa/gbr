@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Plus } from "lucide-react";
 
 export function CreateCaseForm() {
   const [loading, setLoading] = useState(false);
@@ -84,13 +86,18 @@ export function CreateCaseForm() {
           />
         </label>
         <div>
-          <button
+          <Button
+            variant="primary"
             disabled={loading}
-            className="btn-glass btn-inline"
             type="submit"
+            leftIcon={<Plus size={16} />}
+            aria-label="Create Case"
+            title="Create Case"
           >
-            {loading ? "Submitting…" : "Create Case"}
-          </button>
+            <span className="label-desktop">
+              {loading ? "Submitting…" : "Create Case"}
+            </span>
+          </Button>
         </div>
         {msg && (
           <div style={{ color: msg.startsWith("Created") ? "#0a0" : "#a00" }}>

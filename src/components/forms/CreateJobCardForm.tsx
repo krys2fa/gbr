@@ -1,10 +1,13 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { Button } from "@/components/ui/Button";
+import { Download, FileSpreadsheet, Plus } from "lucide-react";
 
 export function CreateJobCardForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
@@ -131,122 +134,141 @@ export function CreateJobCardForm() {
         </label>
       </div>
       <div
-        style={{ marginTop: 8, display: "flex", gap: 8, alignItems: "center" }}
+        style={{
+          marginTop: 8,
+          display: "flex",
+          gap: 8,
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
       >
-        <button
-          className="btn-glass btn-inline"
+        <Button
+          variant="primary"
           disabled={loading}
           type="submit"
+          leftIcon={<Plus size={16} />}
+          aria-label="Create Job Card"
+          title="Create Job Card"
         >
-          {loading ? "Saving..." : "Create Job Card"}
-        </button>
-        {/* Import section */}
-        <label className="btn-glass btn-inline" style={{ cursor: "pointer" }}>
-          Import XLSX/CSV
-          <input
-            type="file"
-            accept=".xlsx,.xls,.csv"
-            style={{ display: "none" }}
-            onChange={async (e) => {
-              const file = e.currentTarget.files?.[0];
-              if (!file) return;
-              setError(null);
-              setImporting(true);
-              try {
-                // Lazy import to keep bundle slim
-                const XLSX = await import("xlsx");
-                const data = await file.arrayBuffer();
-                let rows: any[] = [];
-                if (file.name.toLowerCase().endsWith(".csv")) {
-                  const text = new TextDecoder().decode(new Uint8Array(data));
-                  // Simple CSV parse using XLSX as well
-                  const wb = XLSX.read(text, { type: "string" });
-                  const ws = wb.Sheets[wb.SheetNames[0]];
-                  rows = XLSX.utils.sheet_to_json(ws, { defval: "" });
-                } else {
-                  const wb = XLSX.read(data, { type: "array" });
-                  const ws = wb.Sheets[wb.SheetNames[0]];
-                  rows = XLSX.utils.sheet_to_json(ws, { defval: "" });
-                }
-                // Map common headers to expected fields
-                const mapped = rows.map((r) => ({
-                  ref: r.ref || r.Ref || r.reference || r.Reference,
-                  exporterType:
-                    r.exporterType ||
-                    r.ExporterType ||
-                    r.exporter_type ||
-                    "GOLDBOD",
-                  exporterName:
-                    r.exporterName ||
-                    r.ExporterName ||
-                    r.exporter_name ||
-                    "GOLDBOD",
-                  buyerName: r.buyerName || r.Buyer || r.buyer || r.BuyerName,
-                  phone: r.phone || r.Phone,
-                  address: r.address || r.Address,
-                  tinNumber: r.tinNumber || r.TIN || r.tin || r.tin_number,
-                  destinationCountry:
-                    r.destinationCountry ||
-                    r.destination ||
-                    r.Destination ||
-                    r.country,
-                  deliveryLocation:
-                    r.deliveryLocation || r.Delivery || r.delivery_location,
-                  consignee: r.consignee || r.Consignee,
-                  notifiedParty:
-                    r.notifiedParty || r.Notified || r.notified_party,
-                  numberOfBoxes:
-                    r.numberOfBoxes ||
-                    r.Boxes ||
-                    r.boxes ||
-                    r.number_of_boxes ||
-                    1,
-                  airwayBill: r.airwayBill || r.AWB || r.awb || r.airway_bill,
-                  countryOfOrigin:
-                    r.countryOfOrigin || r.origin || r.Origin || "Ghana",
-                  exporterReference:
-                    r.exporterReference || r.ExporterRef || r.exporter_ref,
-                  usdPrice: r.usdPrice || r.price || r.Price || 0,
-                  totalWeight: r.totalWeight || r.weight || r.Weight || 0,
-                  purityPercent: r.purityPercent || r.purity || r.Purity || 0,
-                }));
-                // Basic validation: keep only rows with minimal required fields
-                const cleaned = mapped.filter(
-                  (m) =>
-                    m &&
-                    m.ref &&
-                    m.buyerName &&
-                    m.phone &&
-                    m.address &&
-                    m.tinNumber &&
-                    m.destinationCountry &&
-                    m.deliveryLocation &&
-                    m.consignee &&
-                    m.notifiedParty &&
-                    m.airwayBill &&
-                    m.exporterReference
-                );
-                if (cleaned.length === 0) {
-                  throw new Error("No valid rows detected in the file");
-                }
-                const res = await fetch("/api/job-cards/import", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ rows: cleaned }),
-                });
-                const j = await res.json();
-                if (!res.ok) throw new Error(j.error || "Import failed");
-                alert(`Imported ${j.count} rows`);
-                // optional: redirect to list
-              } catch (err: any) {
-                setError(err.message || "Failed to import");
-              } finally {
-                setImporting(false);
-                e.currentTarget.value = "";
+          <span className="label-desktop">
+            {loading ? "Saving..." : "Create Job Card"}
+          </span>
+        </Button>
+        {/* Import XLSX/CSV */}
+        <Button
+          variant="secondary"
+          type="button"
+          leftIcon={<FileSpreadsheet size={16} />}
+          aria-label="Import XLSX/CSV"
+          title="Import XLSX/CSV"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <span className="label-desktop">Import XLSX/CSV</span>
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".xlsx,.xls,.csv"
+          style={{ display: "none" }}
+          onChange={async (e) => {
+            const file = e.currentTarget.files?.[0];
+            if (!file) return;
+            setError(null);
+            setImporting(true);
+            try {
+              // Lazy import to keep bundle slim
+              const XLSX = await import("xlsx");
+              const data = await file.arrayBuffer();
+              let rows: any[] = [];
+              if (file.name.toLowerCase().endsWith(".csv")) {
+                const text = new TextDecoder().decode(new Uint8Array(data));
+                // Simple CSV parse using XLSX as well
+                const wb = XLSX.read(text, { type: "string" });
+                const ws = wb.Sheets[wb.SheetNames[0]];
+                rows = XLSX.utils.sheet_to_json(ws, { defval: "" });
+              } else {
+                const wb = XLSX.read(data, { type: "array" });
+                const ws = wb.Sheets[wb.SheetNames[0]];
+                rows = XLSX.utils.sheet_to_json(ws, { defval: "" });
               }
-            }}
-          />
-        </label>
+              // Map common headers to expected fields
+              const mapped = rows.map((r) => ({
+                ref: r.ref || r.Ref || r.reference || r.Reference,
+                exporterType:
+                  r.exporterType ||
+                  r.ExporterType ||
+                  r.exporter_type ||
+                  "GOLDBOD",
+                exporterName:
+                  r.exporterName ||
+                  r.ExporterName ||
+                  r.exporter_name ||
+                  "GOLDBOD",
+                buyerName: r.buyerName || r.Buyer || r.buyer || r.BuyerName,
+                phone: r.phone || r.Phone,
+                address: r.address || r.Address,
+                tinNumber: r.tinNumber || r.TIN || r.tin || r.tin_number,
+                destinationCountry:
+                  r.destinationCountry ||
+                  r.destination ||
+                  r.Destination ||
+                  r.country,
+                deliveryLocation:
+                  r.deliveryLocation || r.Delivery || r.delivery_location,
+                consignee: r.consignee || r.Consignee,
+                notifiedParty:
+                  r.notifiedParty || r.Notified || r.notified_party,
+                numberOfBoxes:
+                  r.numberOfBoxes ||
+                  r.Boxes ||
+                  r.boxes ||
+                  r.number_of_boxes ||
+                  1,
+                airwayBill: r.airwayBill || r.AWB || r.awb || r.airway_bill,
+                countryOfOrigin:
+                  r.countryOfOrigin || r.origin || r.Origin || "Ghana",
+                exporterReference:
+                  r.exporterReference || r.ExporterRef || r.exporter_ref,
+                usdPrice: r.usdPrice || r.price || r.Price || 0,
+                totalWeight: r.totalWeight || r.weight || r.Weight || 0,
+                purityPercent: r.purityPercent || r.purity || r.Purity || 0,
+              }));
+              // Basic validation: keep only rows with minimal required fields
+              const cleaned = mapped.filter(
+                (m) =>
+                  m &&
+                  m.ref &&
+                  m.buyerName &&
+                  m.phone &&
+                  m.address &&
+                  m.tinNumber &&
+                  m.destinationCountry &&
+                  m.deliveryLocation &&
+                  m.consignee &&
+                  m.notifiedParty &&
+                  m.airwayBill &&
+                  m.exporterReference
+              );
+              if (cleaned.length === 0) {
+                throw new Error("No valid rows detected in the file");
+              }
+              const res = await fetch("/api/job-cards/import", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ rows: cleaned }),
+              });
+              const j = await res.json();
+              if (!res.ok) throw new Error(j.error || "Import failed");
+              alert(`Imported ${j.count} rows`);
+              // optional: redirect to list
+            } catch (err: any) {
+              setError(err.message || "Failed to import");
+            } finally {
+              setImporting(false);
+              e.currentTarget.value = "";
+            }
+          }}
+        />
         {importing && <span>Parsing & uploading…</span>}
         {error && <span style={{ color: "#f66" }}>{error}</span>}
       </div>
@@ -264,13 +286,23 @@ export function CreateJobCardForm() {
           </code>
         </div>
         <div style={{ marginTop: 8 }}>
-          <a
-            className="btn-glass btn-inline"
-            href="/job-cards-import-template.csv"
-            download
+          <Button
+            type="button"
+            variant="success"
+            leftIcon={<Download size={16} />}
+            title="Download template CSV"
+            aria-label="Download template CSV"
+            onClick={() => {
+              const a = document.createElement("a");
+              a.href = "/job-cards-import-template.csv";
+              a.download = "job-cards-import-template.csv";
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+            }}
           >
-            Download template
-          </a>
+            <span className="label-desktop">Template</span>
+          </Button>
         </div>
       </div>
     </form>

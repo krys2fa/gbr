@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "GoldBod Registry",
@@ -19,7 +20,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${GeistSans.variable} antialiased`}>{children}</body>
+      <body className={`${GeistSans.variable} antialiased`}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

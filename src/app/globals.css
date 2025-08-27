@@ -1,14 +1,17 @@
-:root{color-scheme:light dark}
+:root{color-scheme:light}
 *{box-sizing:border-box}
 body{margin:0;font-family:var(--font-geist-sans),ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;line-height:1.5}
 input,select,button,textarea{font:inherit}
 label{display:block;margin:8px 0 4px}
-input,select,textarea{width:100%;padding:8px;border:1px solid #ddd;border-radius:6px}
-.input{width:100%;padding:8px 10px;border-radius:8px;background:rgba(0,0,0,0.08);border:1px solid var(--glass-stroke);color:var(--ink)}
-button{padding:10px 14px;border-radius:8px;border:1px solid color-mix(in oklab, var(--brand), black 18%);background: var(--brand);color:#fff;cursor:pointer}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--glass-stroke);border-radius:10px;background:rgba(255,255,255,.7)}
+.input{width:100%;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,0.7);border:1px solid var(--glass-stroke);color:var(--ink)}
+button{padding:10px 14px;border-radius:12px;border:1px solid color-mix(in oklab, var(--brand), black 18%);background: var(--brand);color:#fff;cursor:pointer;transition: transform .15s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease}
 .btn-inline{ display:inline-flex; align-items:center; gap:8px }
+button:hover{ box-shadow: 0 8px 20px var(--glass-shadow); transform: translateY(-1px) }
+button:active{ transform: translateY(0) scale(.995) }
+button:focus-visible{ outline: 3px solid color-mix(in oklab, var(--brand), white 70%); outline-offset: 2px }
 button:disabled{opacity:.6;cursor:not-allowed}
-.card{border:1px solid #eee;border-radius:10px;padding:16px}
+.card{border:1px solid var(--glass-stroke);border-radius:16px;padding:16px;background:var(--surface-2);backdrop-filter: blur(10px)}
 .row{display:flex;gap:12px}
 .col{flex:1}
 
@@ -23,6 +26,8 @@ button:disabled{opacity:.6;cursor:not-allowed}
 		--ink-dim: #536076;
 		--brand: #06b6d4; /* cyan-500 */
 		--brand-2: #8b5cf6; /* violet-500 */
+		--brand-3: #22c55e; /* emerald-500 */
+		--danger: #ef4444; /* red-500 */
 		--brand-soft: #c7f9ff;
 		--surface: #f9fbff;
 		--surface-2: rgba(255,255,255,0.72);
@@ -31,16 +36,47 @@ button:disabled{opacity:.6;cursor:not-allowed}
 		--bg-1: #e6f7ff; /* sky-50 */
 		--bg-2: #f5f3ff; /* violet-50 */
 		--bg-3: #e8fff6; /* mint-50 */
+
+		/* Sonner toast theming */
+		--toast-success: var(--brand-3);
+		--toast-error: var(--danger);
+		--toast-bg: var(--glass-bg);
+		--toast-fg: var(--ink);
 }
 
 /* Subtle, vibrant background for the whole app */
 body{
 		background:
-			radial-gradient(1200px 600px at -10% -10%, color-mix(in oklab, var(--bg-3), white 40%) 0%, transparent 60%),
-			radial-gradient(1000px 600px at 110% 10%, color-mix(in oklab, var(--bg-1), white 30%) 0%, transparent 62%),
-			radial-gradient(900px 520px at 50% 120%, color-mix(in oklab, var(--bg-2), white 35%) 0%, transparent 60%),
+			radial-gradient(1200px 600px at -10% -10%, color-mix(in oklab, var(--bg-3), white 36%) 0%, transparent 60%),
+			radial-gradient(1000px 600px at 110% 10%, color-mix(in oklab, var(--bg-1), white 28%) 0%, transparent 62%),
+			radial-gradient(900px 520px at 50% 120%, color-mix(in oklab, var(--bg-2), white 30%) 0%, transparent 60%),
 			linear-gradient(135deg, var(--bg-1), var(--bg-2));
 		color: var(--ink);
+		position: relative;
+		isolation: isolate; /* ensure pseudo-element sits behind content but above page paint */
+}
+
+/* Animated liquid-glass aurora overlay (non-intrusive) */
+body::before{
+		content: "";
+		position: fixed;
+		inset: -20% -10% -30% -10%;
+		z-index: -1; /* behind app content within body's stacking context */
+		pointer-events: none;
+		background:
+			radial-gradient(closest-side at 12% 18%, color-mix(in oklab, var(--brand), white 78%) 0%, transparent 60%),
+			radial-gradient(closest-side at 88% 12%, color-mix(in oklab, var(--brand-2), white 80%) 0%, transparent 62%),
+			radial-gradient(closest-side at 50% 92%, color-mix(in oklab, var(--brand-3), white 82%) 0%, transparent 60%);
+		filter: blur(42px) saturate(120%);
+		opacity: .55;
+		transform: translateZ(0);
+		animation: aurora-sway 18s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-sway{
+	0%   { transform: translate3d(0,-1%,0) scale(1) rotate(0.001deg); opacity: .52 }
+	50%  { transform: translate3d(0,1.5%,0) scale(1.04); opacity: .58 }
+	100% { transform: translate3d(0,-2%,0) scale(1.02); opacity: .55 }
 }
 
 .glass{
@@ -76,13 +112,68 @@ body{
 .btn-glass{ border: 1px solid var(--glass-stroke) !important; background: var(--surface-2) !important; color: var(--ink) !important; }
 .btn-glass:hover{ box-shadow: 0 6px 16px var(--glass-shadow); }
 
+/* Glass tables: header hover, separators, and mobile card layout */
+.glass-table{ padding:12px; border-radius:12px; overflow:hidden }
+.glass-table table{ width:100%; border-collapse:separate; border-spacing:0 }
+.glass-table thead th{ padding:10px 12px; background: rgba(255,255,255,.45); border-bottom: 1px solid var(--glass-stroke); font-weight:600; color: var(--ink) }
+.glass-table tbody td{ padding:10px 12px }
+.glass-table tbody tr + tr td{ border-top: 1px solid rgba(255,255,255,.4) }
+.glass-table tbody tr:hover{ background: rgba(255,255,255,.35) }
+
+@media (max-width: 640px){
+	.glass-table table, .glass-table thead, .glass-table tbody, .glass-table th, .glass-table td, .glass-table tr{ display:block; width:100% }
+	.glass-table thead{ display:none }
+	.glass-table tbody tr{ background: rgba(255,255,255,.55); border:1px solid var(--glass-stroke); border-radius:12px; padding:8px 10px; margin:8px 0; box-shadow: 0 6px 16px var(--glass-shadow) }
+	.glass-table tbody td{ padding:6px 4px; border:none }
+	.glass-table tbody tr + tr td{ border-top:none }
+}
+
+/* Responsive helper: show label only on >=640px */
+.label-desktop{ display: none; }
+@media (min-width: 640px){
+	.label-desktop{ display: inline; }
+}
+
+/* Button size utilities (scoped minimal) */
+.text-sm{ font-size: .9rem }
+.text-base{ font-size: 1rem }
+.px-3{ padding-left: 12px; padding-right: 12px }
+.px-4{ padding-left: 16px; padding-right: 16px }
+.px-5{ padding-left: 20px; padding-right: 20px }
+.py-2{ padding-top: 8px; padding-bottom: 8px }
+.py-2\.5{ padding-top: 10px; padding-bottom: 10px }
+.py-3{ padding-top: 12px; padding-bottom: 12px }
+
+/* Input with icon (outlined variant) */
+.field{ position: relative; }
+.field .icon{ position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--ink-dim); transition: color .2s ease, transform .2s ease; pointer-events:none }
+.field input{ padding-left: 40px !important; padding-right: 44px !important; background: transparent !important; border: 2px solid var(--glass-stroke) !important; border-radius: 12px; min-height: 44px }
+.field.outlined input{ background: rgba(255,255,255,.55) !important }
+.field:focus-within input{ border-color: var(--brand) !important; box-shadow: 0 0 0 4px color-mix(in oklab, var(--brand), white 82%) }
+.field:focus-within .icon{ color: var(--brand); transform: translateY(-50%) scale(1.05) }
+
+/* Right action (e.g., eye toggle) */
+.field .rightAction{ position:absolute; right: 8px; top:50%; transform: translateY(-50%); display:inline-grid; place-items:center }
+.field .rightAction button{ border:none; background:transparent; padding:6px; border-radius:8px; color: var(--ink-dim); cursor: pointer; transition: color .2s ease, transform .15s ease, box-shadow .2s ease }
+.field .rightAction button:hover{ color: var(--brand); transform: translateY(-1px) }
+.field .rightAction button:active{ transform: translateY(0) scale(.98) }
+
+/* Helper text under inputs */
+.help{ color: var(--ink-dim); font-size: 12px; margin-top: 6px }
+
+/* Accent variants */
+.btn-primary{ background: var(--brand); border-color: color-mix(in oklab, var(--brand), black 18%); color: white }
+.btn-secondary{ background: color-mix(in oklab, var(--brand-2), white 10%); border-color: color-mix(in oklab, var(--brand-2), black 18%); color: white }
+.btn-success{ background: var(--brand-3); border-color: color-mix(in oklab, var(--brand-3), black 18%); color: white }
+.btn-danger{ background: var(--danger); border-color: color-mix(in oklab, var(--danger), black 18%); color: white }
+
 .badge{
 	position: absolute;
 	top: -4px; right: -4px;
 	min-width: 18px; height: 18px;
 	padding: 0 5px;
 	border-radius: 9px;
-	background: #ef4444;
+	background: var(--danger);
 	color: white;
 	font-size: 11px; line-height: 18px; text-align: center;
 	box-shadow: 0 2px 8px rgba(239,68,68,.4);
@@ -127,6 +218,11 @@ body{
 	*{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
 }
 
+/* Avoid heavy backgrounds in print */
+@media print{
+	body::before{ display: none !important; }
+}
+
 /* Responsive shell helpers */
 .shell{ display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; gap: 16px; }
 .sidebar{ padding: 16px; }
@@ -137,3 +233,24 @@ body{
 	.sidebar{ position: fixed; inset: 0 0 auto 0; height: 64px; display: grid; align-items: center; backdrop-filter: blur(12px); z-index: 20; }
 	.content{ padding-top: 88px; }
 }
+
+/* Modal overlay (covers app content) */
+.modal-overlay{
+	position: fixed;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	background: rgba(15,23,42,.38); /* slate-900 at ~38% */
+	backdrop-filter: blur(2px);
+	-webkit-backdrop-filter: blur(2px);
+	z-index: 60; /* above nav/topbar */
+}
+
+/* Sonner toast glass theme */
+:root{
+	--sonner-success: var(--toast-success);
+	--sonner-error: var(--toast-error);
+}
+.sonner-toast{ backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); background: var(--toast-bg) !important; color: var(--toast-fg) !important; border: 1px solid var(--glass-stroke) !important; box-shadow: 0 10px 30px var(--glass-shadow) !important; }
+.sonner-toast .title{ font-weight: 700 }
+.sonner-toast .description{ color: var(--ink-dim) }

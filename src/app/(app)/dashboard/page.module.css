@@ -1,0 +1,35 @@
+.gridStats{ display:grid; gap:16px; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); margin-top:16px }
+.cardStat{ padding:16px; border-radius:16px; transition: transform .15s, box-shadow .15s }
+.cardStat:hover{ box-shadow: 0 12px 32px rgba(15,23,42,.12); transform: translateY(-1px) }
+@media (prefers-reduced-motion: reduce){ .cardStat:hover{ transform:none; box-shadow: 0 8px 24px var(--glass-shadow) } }
+
+/* Text styles */
+.cardLabel{ font-size:12px; color: var(--ink-dim); margin-bottom:6px }
+.cardValue{ font-size:28px; font-weight:700 }
+.cardHint{ font-size:12px; color: var(--ink-dim); margin-top:4px }
+
+/* Page title */
+.pageTitle{ margin-top:0 }
+.subtle{ color: var(--ink-dim); margin: 4px 0 0 }
+.headerRow{ display:flex; align-items:flex-end; justify-content:space-between }
+
+/* Grid: main + aside */
+.gridLayout{ display:grid; grid-template-columns: 1fr 320px; gap: 16px; align-items:start; }
+.mainCol{ display:grid; gap:16px }
+.asideCol{ position:sticky; top:16px; height: max-content }
+
+/* Chart cards */
+.chartCard{ padding:12px 12px 8px; border-radius:16px }
+.cardHead{ display:flex; align-items:center; justify-content:space-between; margin:4px 6px 8px }
+.legend{ display:inline-flex; align-items:center; gap:10px; color: var(--ink-dim); font-size:12px }
+.dotBrand{ width:10px; height:10px; border-radius:50%; background: var(--brand); display:inline-block }
+.dotBrand2{ width:10px; height:10px; border-radius:50%; background: var(--brand-2); display:inline-block }
+.chartSvg{ width:100%; height:auto; display:block }
+
+/* Small row for icon + label in aside cards */
+.rowSmall{ display:inline-flex; align-items:center; gap:8px }
+
+@media (max-width: 1024px){
+	.gridLayout{ grid-template-columns: 1fr }
+	.asideCol{ position:static }
+}

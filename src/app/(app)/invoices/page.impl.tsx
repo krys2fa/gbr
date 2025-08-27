@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+import { InvoicesList } from "./InvoicesList.client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/server/db";
-import { CreateInvoiceForm } from "@/components/forms/CreateInvoiceForm";
+import { InvoicesActionsBar } from "./ActionsBar.client";
 
 export default async function InvoicesPage({
   searchParams,
@@ -45,18 +46,14 @@ export default async function InvoicesPage({
     list = rows;
     total = cnt;
   }
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const buildHref = (p: number) => {
-    const params = new URLSearchParams();
-    if (invoiceNoQ) params.set("invoiceNo", invoiceNoQ);
-    params.set("page", String(p));
-    params.set("pageSize", String(pageSize));
-    return `/invoices?${params.toString()}`;
-  };
+  const params = new URLSearchParams();
+  if (invoiceNoQ) params.set("invoiceNo", invoiceNoQ);
+  params.set("page", String(page));
+  params.set("pageSize", String(pageSize));
+  const apiUrl = `/api/invoices?${params.toString()}`;
   return (
     <div>
-      <h1>Invoices</h1>
-      <CreateInvoiceForm />
+      <InvoicesActionsBar total={total} />
       <form
         method="GET"
         className="glass"
@@ -90,75 +87,19 @@ export default async function InvoicesPage({
             </select>
           </label>
           <div style={{ alignSelf: "end" }}>
-            <button className="btn-glass btn-inline" type="submit">
+            <Button variant="glass" type="submit">
               Filter
-            </button>
+            </Button>
           </div>
         </div>
         <input type="hidden" name="page" value="1" />
       </form>
-      {!hasDb && <p style={{ color: "#666" }}>Database not configured.</p>}
       {hasDb && (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th align="left">Invoice No</th>
-              <th align="right">Amount</th>
-              <th align="left">Created</th>
-              <th align="left">Print</th>
-            </tr>
-          </thead>
-          <tbody>
-            {list.map((i) => (
-              <tr key={i.invoiceNo}>
-                <td>{i.invoiceNo}</td>
-                <td style={{ textAlign: "right" }}>
-                  {i.amount?.toString?.() ?? i.amount}
-                </td>
-                <td>{new Date(i.createdAt).toLocaleString()}</td>
-                <td>
-                  <Link href={`/invoice/${i.id}` as any} prefetch={false}>
-                    Print
-                  </Link>
-                </td>
-              </tr>
-            ))}
-            {list.length === 0 && (
-              <tr>
-                <td colSpan={4} style={{ color: "#666" }}>
-                  No invoices.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      )}
-      {hasDb && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: 12,
-          }}
-        >
-          <div>
-            Page {page} of {totalPages} ({total} total)
-          </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <Link
-              className="btn-glass btn-inline"
-              href={buildHref(Math.max(1, page - 1)) as any}
-            >
-              Prev
-            </Link>
-            <Link
-              className="btn-glass btn-inline"
-              href={buildHref(Math.min(totalPages, page + 1)) as any}
-            >
-              Next
-            </Link>
-          </div>
-        </div>
+        <InvoicesList
+          queryKey={[{ invoiceNoQ, page, pageSize }]}
+          apiUrl={apiUrl}
+          initial={{ items: list as any, total, page, pageSize }}
+        />
       )}
     </div>
   );

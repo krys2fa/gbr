@@ -7,19 +7,25 @@
 .userGrid{ display:grid; gap:6px }
 .userName{ font-weight:600 }
 .userRole{ color: var(--ink-dim); font-size:12px }
-.topBar{ position:sticky; top:12px; z-index:10; padding:10px; border-radius:14px; display:flex; justify-content:space-between; align-items:center; margin:12px 0 }
+.topBar{ position:sticky; top:8px; z-index:10; padding:0; border-radius:0; display:flex; justify-content:flex-start; align-items:center; margin:0 0 12px }
 .row{ display:flex; align-items:center; gap:8px }
 .overlay{ position:fixed; inset:0; background:rgba(15,23,42,.28); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px); z-index:50 }
 .drawer{ position:absolute; top:0; left:0; width:80%; max-width:320px; height:100%; padding:16px; border-radius:0; box-shadow:24px 0 64px rgba(15,23,42,.22); transform:translateX(0); animation:slide-in .16s ease-out }
 .mb12{ margin-bottom:12px }
 .navList{ list-style:none; padding:0; margin:0; display:grid; gap:8px }
 .navItem{
-  display:grid; grid-template-columns:20px 1fr; align-items:center; gap:10px;
+  display:flex; align-items:center; gap:10px;
   padding:10px 12px; border-radius:12px; color:var(--ink);
   text-decoration:none;
 }
+/* Icon wrapper: fixed square box to center icon precisely */
+.navItem > :first-child{ width:22px; height:22px; flex:0 0 22px; display:inline-flex; align-items:center; justify-content:center }
+/* Normalize SVG icon sizing; keep optical vertical centering */
+.navItem svg{ width:18px; height:18px; display:block }
+/* Label wrapper: ensure text aligns vertically with icon */
+.navItem > span:last-child{ display:inline-flex; align-items:center; line-height:1 }
 .navItem:hover{ box-shadow:0 8px 20px var(--glass-shadow) }
-.active{ background:rgba(255,255,255,.8); border:1px solid rgba(255,255,255,.55) }
+.active{ background:rgba(255,255,255,.8); border:1px solid rgba(255,255,255,.55); color: var(--brand) }
 .active svg{ color: var(--brand); stroke: var(--brand) }
 
 .sheen{ position:relative; overflow:hidden }

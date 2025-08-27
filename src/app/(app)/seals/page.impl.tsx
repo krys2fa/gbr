@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/server/db";
-import { CreateSealForm } from "@/components/forms/CreateSealForm";
+import { SealsActionsBar } from "./ActionsBar.client";
 
 export default async function SealsPage({
   searchParams,
@@ -50,43 +50,47 @@ export default async function SealsPage({
   const buildHref = (p: number) => `/seals?page=${p}&pageSize=${pageSize}`;
   return (
     <div>
-      <h1>Seals</h1>
-      <CreateSealForm />
+      <SealsActionsBar total={total} />
       {!hasDb && <p style={{ color: "#666" }}>Database not configured.</p>}
       {hasDb && (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th align="left">Job</th>
-              <th align="left">Customs</th>
-              <th align="left">PMMC Seal</th>
-              <th align="left">Created</th>
-              <th align="left">Print</th>
-            </tr>
-          </thead>
-          <tbody>
-            {list.map((s, idx) => (
-              <tr key={`${s.jobCardId}-${idx}`}>
-                <td>{s.jobCardId}</td>
-                <td>{s.customsName}</td>
-                <td>{s.pmmcSealNo}</td>
-                <td>{new Date(s.createdAt).toLocaleString()}</td>
-                <td>
-                  <Link href={`/seal/${s.id}` as any} prefetch={false}>
-                    Print
-                  </Link>
-                </td>
-              </tr>
-            ))}
-            {list.length === 0 && (
+        <div
+          className="glass glass-table"
+          style={{ padding: 12, borderRadius: 12 }}
+        >
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
               <tr>
-                <td colSpan={5} style={{ color: "#666" }}>
-                  No seals.
-                </td>
+                <th align="left">Job</th>
+                <th align="left">Customs</th>
+                <th align="left">PMMC Seal</th>
+                <th align="left">Created</th>
+                <th align="left">Print</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {list.map((s, idx) => (
+                <tr key={`${s.jobCardId}-${idx}`}>
+                  <td>{s.jobCardId}</td>
+                  <td>{s.customsName}</td>
+                  <td>{s.pmmcSealNo}</td>
+                  <td>{new Date(s.createdAt).toLocaleString()}</td>
+                  <td>
+                    <Link href={`/seal/${s.id}` as any} prefetch={false}>
+                      Print
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+              {list.length === 0 && (
+                <tr>
+                  <td colSpan={5} style={{ color: "#666" }}>
+                    No seals.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
       {hasDb && (
         <div

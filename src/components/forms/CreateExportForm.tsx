@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Plus } from "lucide-react";
 
 export function CreateExportForm() {
   const [loading, setLoading] = useState(false);
@@ -52,13 +54,18 @@ export function CreateExportForm() {
           <input name="destination" required className="input" />
         </label>
         <div>
-          <button
+          <Button
+            variant="primary"
             disabled={loading}
-            className="btn-glass btn-inline"
             type="submit"
+            leftIcon={<Plus size={16} />}
+            aria-label="Create Export"
+            title="Create Export"
           >
-            {loading ? "Submitting…" : "Create Export"}
-          </button>
+            <span className="label-desktop">
+              {loading ? "Submitting…" : "Create Export"}
+            </span>
+          </Button>
         </div>
         {msg && (
           <div style={{ color: msg.startsWith("Created") ? "#0a0" : "#a00" }}>
