@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import { Button } from "@/components/ui/Button";
+import { JobCardsList } from "./JobCardsList.client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/server/db";
-import { CreateJobCardForm } from "@/components/forms/CreateJobCardForm";
+import { JobCardsActionsBar } from "./ActionsBar.client";
 
 export default async function JobCardsPage({
   searchParams,
@@ -25,39 +26,19 @@ export default async function JobCardsPage({
   if (refQ) where.ref = { contains: refQ, mode: "insensitive" };
   if (buyerQ) where.buyerName = { contains: buyerQ, mode: "insensitive" };
   let total = 0;
-  let jobs: Array<{
-    ref: string;
-    buyerName: string;
-    status: string;
-    createdAt: Date;
-  }> = [];
   if (hasDb) {
-    const [list, cnt] = await (prisma as any).$transaction([
-      (prisma as any).jobCard.findMany({
-        where,
-        select: { ref: true, buyerName: true, status: true, createdAt: true },
-        orderBy: { createdAt: "desc" },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-      }),
-      (prisma as any).jobCard.count({ where }),
-    ]);
-    jobs = list as any;
-    total = cnt;
+    // Only count for header stats; defer list fetching to the client for faster navigation.
+    total = await (prisma as any).jobCard.count({ where });
   }
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const buildHref = (p: number) => {
-    const params = new URLSearchParams();
-    if (refQ) params.set("ref", refQ);
-    if (buyerQ) params.set("buyer", buyerQ);
-    params.set("page", String(p));
-    params.set("pageSize", String(pageSize));
-    return `/job-cards?${params.toString()}`;
-  };
+  const params = new URLSearchParams();
+  if (refQ) params.set("ref", refQ);
+  if (buyerQ) params.set("buyer", buyerQ);
+  params.set("page", String(page));
+  params.set("pageSize", String(pageSize));
+  const apiUrl = `/api/job-cards?${params.toString()}`;
   return (
     <div>
-      <h1>Job Cards</h1>
-      <CreateJobCardForm />
+      <JobCardsActionsBar total={total} />
       <form
         method="GET"
         className="glass"
@@ -91,9 +72,9 @@ export default async function JobCardsPage({
             </select>
           </label>
           <div style={{ alignSelf: "end" }}>
-            <button className="btn-glass btn-inline" type="submit">
+            <Button variant="glass" type="submit">
               Filter
-            </button>
+            </Button>
           </div>
         </div>
         <input type="hidden" name="page" value="1" />
@@ -102,60 +83,10 @@ export default async function JobCardsPage({
       {/* TODO: Add CreateJobCardForm with excel upload */}
       {!hasDb && <p style={{ color: "#666" }}>Database not configured.</p>}
       {hasDb && (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th align="left">Ref</th>
-              <th align="left">Buyer</th>
-              <th align="left">Status</th>
-              <th align="left">Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {jobs.map((j) => (
-              <tr key={j.ref}>
-                <td>{j.ref}</td>
-                <td>{j.buyerName}</td>
-                <td>{j.status}</td>
-                <td>{new Date(j.createdAt).toLocaleString()}</td>
-              </tr>
-            ))}
-            {jobs.length === 0 && (
-              <tr>
-                <td colSpan={4} style={{ color: "#666" }}>
-                  No matching jobs.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      )}
-      {hasDb && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: 12,
-          }}
-        >
-          <div>
-            Page {page} of {totalPages} ({total} total)
-          </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <Link
-              className="btn-glass btn-inline"
-              href={buildHref(Math.max(1, page - 1)) as any}
-            >
-              Prev
-            </Link>
-            <Link
-              className="btn-glass btn-inline"
-              href={buildHref(Math.min(totalPages, page + 1)) as any}
-            >
-              Next
-            </Link>
-          </div>
-        </div>
+        <JobCardsList
+          queryKey={[{ refQ, buyerQ, page, pageSize }]}
+          apiUrl={apiUrl}
+        />
       )}
     </div>
   );
